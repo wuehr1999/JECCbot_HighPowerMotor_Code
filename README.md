@@ -31,4 +31,6 @@ Every error code startd with the command e and has a specific index ( %03d ) as 
 
 ## Supported Mikrocontrollers
 
-* ATSAM21D/Adafruit Feather M0 ( https://www.adafruit.com/product/2772 )
+| Mikrocontroller | Needed Libraries |
+| --------------- | ---------------- |
+| ATSAM21D/Adafruit Feather M0 ( https://www.adafruit.com/product/2772 ) | https://github.com/adafruit/Adafruit_ADS1X15 |
