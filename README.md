@@ -28,3 +28,7 @@ Every error code startd with the command e and has a specific index ( %03d ) as 
 | 000 | received data is no command |
 | 001 | Command is not found |
 | 002 | Syntax error in command |
+
+## Supported Mikrocontrollers
+
+* ATSAM21D/Adafruit Feather M0 ( https://www.adafruit.com/product/2772 )
