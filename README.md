@@ -9,6 +9,8 @@ Every protocol message begins with ```:``` and ends with ```\n```. Between there
 
 If the command was executed correctly, the board will answer with the same command and optional set or read parameters or an error code.
 
+The default protocol baudrate is 115200.
+
 ### Commands
 
 | Command | Parameters | Response parameters | Format | Example |
@@ -18,11 +20,11 @@ If the command was executed correctly, the board will answer with the same comma
 
 
 ### Error Codes
-
+the high power motor control board ( https://github.com/generationmake/HighPowerMotorFeatherWing )
 Every error code startd with the command e and has a specific index ( %03d ) as parameter, e. g. ```:e001\n```.
 
 | Index | Meaning |
 | ----- | ------- |
-| 000 | UART data is no command |
+| 000 | received data is no command |
 | 001 | Command is not found |
 | 002 | Syntax error in command |
