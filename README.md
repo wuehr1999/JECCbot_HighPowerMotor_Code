@@ -15,8 +15,8 @@ The default protocol baudrate is 115200.
 
 | Command | Parameters | Response parameters | Format | Example |
 | ------- | -------- | ----------------- | ------ | ------- |
-| s       | [-]speedLeft[-]speedRight | [-]speedLeft[-]speedRight | %03d, -100% to 100% | ```:s100-050``` |
-| f       | frequency | frequency | 0 Hz to 16000 Hz, %05d | ```:f08000``` |
+| s       | [-]speedLeft[-]speedRight | [-]speedLeft[-]speedRight | %03d, -100% to 100% | ```:s100-050\n``` |
+| f       | frequency | frequency | 0 Hz to 16000 Hz, %05d | ```:f08000\n``` |
 
 
 ### Error Codes
