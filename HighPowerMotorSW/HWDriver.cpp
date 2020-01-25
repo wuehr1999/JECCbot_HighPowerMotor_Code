@@ -1,6 +1,7 @@
 #include "HWDriver.h"
 
 Motor motorLeft, motorRight;
+BNO055 bno055;
 
 ResponseMessage initJECCbot()
 {
@@ -9,6 +10,8 @@ ResponseMessage initJECCbot()
 
   motorEnable(&motorLeft, true);
   motorEnable(&motorRight, true);
+
+  bno055Init(&bno055, BNO055_ADDRESS);
   
   start1000Hz();
   start16000Hz();  
@@ -42,7 +45,7 @@ ResponseMessage processCommand(char *command)
     if(msg[1] == MSG_DRV_SPEED)
     {
       int left, right, messageLen;
-      
+
       if(msg[2]=='-')
       {
         left = -(100*((int)msg[3]-48) + 10*((int)msg[4]-48) + 1*((int)msg[5]-48));
@@ -71,7 +74,6 @@ ResponseMessage processCommand(char *command)
           messageLen = 8;
         }
       }
-   
       if(msg[messageLen] == '\n')
       {
         setMotors(left, right);
@@ -79,22 +81,22 @@ ResponseMessage processCommand(char *command)
         {
           if(right>0)
           {
-            message.length = sprintf(message.message, ":%s%03d%03d\n", MSG_DRV_SPEED, left, right);            
+            message.length = sprintf(message.message, ":%c%03d%03d\n", MSG_DRV_SPEED, left, right);            
           }
           else
           {
-            message.length = sprintf(message.message, ":%cs%03d-%03d\n", MSG_DRV_SPEED, left, -right);
+            message.length = sprintf(message.message, ":%c%03d-%03d\n", MSG_DRV_SPEED, left, -right);
           }
         }
         else
         {
           if(right>0)
           {
-            message.length = sprintf(message.message, ":%s-%03d%03d\n", MSG_DRV_SPEED, -left, right);            
+            message.length = sprintf(message.message, ":%c-%03d%03d\n", MSG_DRV_SPEED, -left, right);            
           }
           else
           {
-            message.length = sprintf(message.message, ":-%s03d-%03d\n", MSG_DRV_SPEED, -left, -right);
+            message.length = sprintf(message.message, ":%c-%03d-%03d\n", MSG_DRV_SPEED, -left, -right);
           }
         }
         message.error = false;
@@ -103,16 +105,15 @@ ResponseMessage processCommand(char *command)
       {
         message = errorMessage(MSG_ERROR_SYNTAX);
       }
- 
     }
     else if(msg[1] == MSG_DRV_FREQ)
-    {
+    {      
       int freq = 10000*((int)msg[2]-48) + 1000*((int)msg[3]-48) + 100*((int)msg[4]-48) + 10*((int)msg[5]-48) + 1*((int)msg[6]-48);
       if(msg[7] == '\n')
       {
         changeMotorPwmFrequency(freq);
         
-        message.length = sprintf(message.message, ":%f%05d\n", MSG_DRV_FREQ, freq);     
+        message.length = sprintf(message.message, ":%c%05d\n", MSG_DRV_FREQ, freq);     
         message.error = false; 
       }
       else
@@ -120,6 +121,32 @@ ResponseMessage processCommand(char *command)
         message = errorMessage(MSG_ERROR_SYNTAX);
       }
     }
+    else if(msg[1] == MSG_BNO055_HEADING)
+    {
+      if(msg[2] == '\n')
+      {
+        bno055Update(&bno055);
+        message.length = sprintf(message.message, ":%c%03d\n", MSG_BNO055_HEADING, bno055.heading);     
+        message.error = false; 
+      }
+      else
+      {
+        message = errorMessage(MSG_ERROR_SYNTAX);
+      }    
+    }  
+    else if(msg[1] == MSG_BNO055_CAL)
+    {
+      if(msg[2] == '\n')
+      {
+        bno055Update(&bno055);
+        message.length = sprintf(message.message, ":%c%03d\n", MSG_BNO055_HEADING, bno055.calibStat);     
+        message.error = false; 
+      }
+      else
+      {
+        message = errorMessage(MSG_ERROR_SYNTAX);
+      }    
+    }    
     else
     {
       message = errorMessage(MSG_ERROR_NOTFOUND);
@@ -148,7 +175,6 @@ void setMotors(int speedLeft, int speedRight)
 
 void interrupt1000Hz()
 {
-
 }
 
 void interrupt16000Hz()

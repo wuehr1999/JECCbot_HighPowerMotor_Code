@@ -2,8 +2,10 @@
 #define HW_DRIVER_H
 
 #include <Arduino.h>
+
 #include "Timers.h"
 #include "Motor.h"
+#include "BNO055.h"
 
 #define MOT1_1 10
 #define MOT1_2 9
@@ -19,8 +21,10 @@
 #define MSG_INIT ":init"
 #define MSG_DRV_SPEED 's'
 #define MSG_DRV_FREQ 'f'
+#define MSG_BNO055_HEADING 'h'
+#define MSG_BNO055_CAL 'c'
 
-extern Motor motorLeft, motorRight;
+#define BNO055_ADDRESS 0x28
 
 typedef struct ResponseMessage
 {
