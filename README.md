@@ -16,9 +16,9 @@ The default protocol baudrate is 115200.
 | Command | Meaning | Parameters | Response parameters | Format | Example |
 | ------- | ------- | -------- | ----------------- | ------ | ------- |
 | s       | set speeds | [-]speedLeft[-]speedRight | [-]speedLeft[-]speedRight | %03d, -100% to 100% | ```:s100-050\n``` |
-| f       | motors pwm frequency | frequency | frequency | 0 Hz to 16000 Hz, %05d | ```:f08000\n``` |
-| c       | bno 055 calibration | - | | calibration status | %03d, -100% to 100% | ```:s\n``` |
-
+| f       | motors pwm frequency | frequency | frequency | %05d, 0 Hz to 16000 Hz | ```:f08000\n``` |
+| c       | bno 055 calibration | - | calibration status | %03d, -100% to 100% | ```:s\n``` |
+| h       | bno 055 heading | - | heading | %03d, -180° to 180° | ```:h\n``` |
 
 ### Error Codes
 the high power motor control board ( https://github.com/generationmake/HighPowerMotorFeatherWing )
