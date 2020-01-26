@@ -21,8 +21,8 @@ The default protocol baudrate is 115200.
 | h       | bno 055 heading | - | heading | %03d, -180° to 180° | ```:h\n``` |
 
 ### Error Codes
-the high power motor control board ( https://github.com/generationmake/HighPowerMotorFeatherWing )
-Every error code startd with the command e and has a specific index ( %03d ) as parameter, e. g. ```:e001\n```.
+
+Every error code starts with the command e and has a specific index ( %03d ) as parameter, e. g. ```:e001\n```.
 
 | Index | Meaning |
 | ----- | ------- |
