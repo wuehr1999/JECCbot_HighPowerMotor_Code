@@ -1,6 +1,5 @@
 #include "BNO055.h"
 
-/***Initializes BNO with correct opmode***/
 void bno055Init(BNO055 *bno, int address)
 {
   Wire.begin();
@@ -13,7 +12,6 @@ void bno055Init(BNO055 *bno, int address)
   Wire.endTransmission(false);
 }
 
-/***Updates BNO Data struct***/
 void bno055Update(BNO055 *bno)
 {
   //Check opmode

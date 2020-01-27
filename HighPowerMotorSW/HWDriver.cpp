@@ -40,3 +40,17 @@ void interrupt16000Hz()
   motorUpdate(&motorLeft);
   motorUpdate(&motorRight);
 }
+
+int getHeading()
+{
+  bno055Update(&bno055);
+  
+  return bno055.heading;  
+}
+
+int getCompassCal()
+{
+  bno055Update(&bno055);
+  
+  return bno055.calibStat;
+}

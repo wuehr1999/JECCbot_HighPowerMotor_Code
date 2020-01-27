@@ -23,7 +23,7 @@ ResponseMessage errorMessage(int error)
 
 ResponseMessage processCommand(char *command)
 {
-  char *msg = new char[strlen(command) + 1];
+  char *msg = (char *)malloc(sizeof(char)*(strlen(command) + 1));
   strcpy(msg, command);
 
   ResponseMessage message;
@@ -115,7 +115,7 @@ ResponseMessage processCommand(char *command)
         message.error = false;
       }
     }
-    else if (msg[1] == MSG_BNO055_HEADING)
+    else if (msg[1] == MSG_COMPASS_HEADING)
     {
       commandNotFoundError = false;
 
@@ -123,8 +123,7 @@ ResponseMessage processCommand(char *command)
       {
         syntaxError = false;
 
-        bno055Update(&bno055);
-        message.length = sprintf(message.message, ":%c%03d\n", MSG_BNO055_HEADING, bno055.heading);
+        message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_HEADING, getHeading());
         message.error = false;
       }
       else
@@ -132,7 +131,7 @@ ResponseMessage processCommand(char *command)
         message = errorMessage(MSG_ERROR_SYNTAX);
       }
     }
-    else if (msg[1] == MSG_BNO055_CAL)
+    else if (msg[1] == MSG_COMPASS_CAL)
     {
       commandNotFoundError = false;
 
@@ -140,8 +139,7 @@ ResponseMessage processCommand(char *command)
       {
         syntaxError = false;
 
-        bno055Update(&bno055);
-        message.length = sprintf(message.message, ":%c%03d\n", MSG_BNO055_HEADING, bno055.calibStat);
+        message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_CAL, getCompassCal());
         message.error = false;
       }
     }

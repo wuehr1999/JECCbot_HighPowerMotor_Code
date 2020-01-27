@@ -11,9 +11,12 @@
 
 #define MSG_DRV_SPEED 's'
 #define MSG_DRV_FREQ 'f'
-#define MSG_BNO055_HEADING 'h'
-#define MSG_BNO055_CAL 'c'
+#define MSG_COMPASS_HEADING 'h'
+#define MSG_COMPASS_CAL 'c'
 
+/***
+ * Struct containing api response message data
+ */
 typedef struct ResponseMessage
 {
 char message[40];
@@ -21,8 +24,15 @@ int length;
 bool error;
 } ResponseMessage;
 
+/***
+ * Inits hardware
+ */
 ResponseMessage initJECCbot();
 
+/***
+ * Executes api command and returns uart response message.
+ * Takes command string startind with ':' and ending with '\n'
+ */
 ResponseMessage processCommand(char *command);
 
 #endif

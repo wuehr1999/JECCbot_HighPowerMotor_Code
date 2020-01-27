@@ -21,7 +21,7 @@ typedef struct BNO055{
   int heading; //-180 to 180 degrees
 }BNO055;
 
-/***Initializes BNO with correct opmode***/
+/***Inits BNO with correct opmode***/
 void bno055Init(BNO055 *bno, int address);
 
 /***Updates BNO Data struct***/

@@ -7,7 +7,6 @@ void setup() {
   Serial.begin(115200);
   ResponseMessage message = initJECCbot();
   Serial.write(message.message);
-  //Wire.begin();
 }
 
 void loop() {

@@ -20,10 +20,31 @@
 extern Motor motorLeft, motorRight;
 extern BNO055 bno055;
 
+/***
+ * Inits JECCbot hardware
+ */
 void HWInit();
 
+/***
+ * Changes motor pwm base frequency.
+ * Takes values from 0 to 16000 Hz.
+ */
 void changeMotorPwmFrequency(int pwmFrequency);
 
+/***
+ * Sets motors speeds without control ( PWM dutycycle only ).
+ * Takes values from -100% to 100% for each motor.
+ */
 void setMotors(int speedLeft, int speedRight);
+
+/***
+ * Returns heading of robot to north ( -180 deg to 180 deg ).
+ */
+int getHeading();
+
+/***
+ * Returns calibration state of compass ( -100% to 100% ).
+ */
+int getCompassCal();
 
 #endif
