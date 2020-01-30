@@ -5,6 +5,7 @@ void bno055Init(BNO055 *bno, int address)
   Wire.begin();
 
   bno->address = address;
+  Serial.println(address);
 
   Wire.beginTransmission(bno->address);
   Wire.write(BNO055_REGISTER_OPMODE);

@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#define BNO055_ADDRESS 0x28
+#define BNO055_ADDRESS 0x29
 #define BNO055_REGISTER_OPMODE 0x3d
 #define BNO055_VALUE_OPMODE 0x0c
 #define BNO055_REGISTER_CALIBSTAT 0x35

@@ -15,8 +15,6 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
-#define BNO055_ADDRESS 0x28
-
 extern Motor motorLeft, motorRight;
 extern BNO055 bno055;
 

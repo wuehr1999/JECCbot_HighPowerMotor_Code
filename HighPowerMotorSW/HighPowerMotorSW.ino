@@ -1,6 +1,7 @@
 #include "JECCbotAPI.h"
 
 #include <Arduino.h>
+#include <Wire.h>
 
 void setup() {
   
