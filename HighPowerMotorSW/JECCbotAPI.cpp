@@ -1,9 +1,13 @@
 #include "JECCbotAPI.h"
 
+ApiCommand currentCommand;
+
 ResponseMessage initJECCbot()
 {
   HWInit();
 
+  currentCommand.id = CMD_NOP;
+  
   ResponseMessage message;
   message.length = sprintf(message.message, ":init\n");
   message.error = false;
@@ -74,10 +78,14 @@ ResponseMessage processCommand(char *command)
       {
         syntaxError = false;
 
-        setMotors(left, right);
-        if (left > 0)
+        //setMotors(left, right);
+        currentCommand.id = CMD_SETMOTORS;
+        currentCommand.param1 = left;
+        currentCommand.param2 = right;
+        
+        if (left >= 0)
         {
-          if (right > 0)
+          if (right >= 0)
           {
             message.length = sprintf(message.message, ":%c%03d%03d\n", MSG_DRV_SPEED, left, right);
           }
@@ -88,7 +96,7 @@ ResponseMessage processCommand(char *command)
         }
         else
         {
-          if (right > 0)
+          if (right >= 0)
           {
             message.length = sprintf(message.message, ":%c-%03d%03d\n", MSG_DRV_SPEED, -left, right);
           }
@@ -122,8 +130,15 @@ ResponseMessage processCommand(char *command)
       if (msg[2] == '\n')
       {
         syntaxError = false;
-
-        message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_HEADING, getHeading());
+        int heading = getHeading();
+        if(heading > 0)
+        {
+          message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_HEADING, heading);
+        }
+        else
+        {
+          message.length = sprintf(message.message, ":%c-%03d\n", MSG_COMPASS_HEADING, -heading);          
+        }
         message.error = false;
       }
       else
@@ -143,6 +158,73 @@ ResponseMessage processCommand(char *command)
         message.error = false;
       }
     }
+    if (msg[1] == MSG_DRV_HEADING)
+    {
+      commandNotFoundError = false;
+
+      int heading, speedMax, messageLen;
+
+      if (msg[2] == '-')
+      {
+        heading = -(100 * ((int)msg[3] - 48) + 10 * ((int)msg[4] - 48) + 1 * ((int)msg[5] - 48));
+        if (msg[6] == '-')
+        {
+          speedMax = -(100 * ((int)msg[7] - 48) + 10 * ((int)msg[8] - 48) + 1 * ((int)msg[9] - 48));
+          messageLen = 10;
+        }
+        else
+        {
+          speedMax = (100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
+          messageLen = 9;
+        }
+      }
+      else
+      {
+        heading = (100 * ((int)msg[2] - 48) + 10 * ((int)msg[3] - 48) + 1 * ((int)msg[4] - 48));
+        if (msg[5] == '-')
+        {
+          speedMax = -(100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
+          messageLen = 9;
+        }
+        else
+        {
+          speedMax = (100 * ((int)msg[5] - 48) + 10 * ((int)msg[6] - 48) + 1 * ((int)msg[7] - 48));
+          messageLen = 8;
+        }
+      }
+      if (msg[messageLen] == '\n')
+      {
+        syntaxError = false;
+
+        currentCommand.id = CMD_DRIVEHEADING;
+        currentCommand.param1 = heading;
+        currentCommand.param2 = speedMax;
+        
+        if (heading >= 0)
+        {
+          if (speedMax >= 0)
+          {
+            message.length = sprintf(message.message, ":%c%03d%03d\n", MSG_DRV_HEADING, heading, speedMax);
+          }
+          else
+          {
+            message.length = sprintf(message.message, ":%c%03d-%03d\n", MSG_DRV_HEADING, heading, -speedMax);
+          }
+        }
+        else
+        {
+          if (speedMax >= 0)
+          {
+            message.length = sprintf(message.message, ":%c-%03d%03d\n", MSG_DRV_HEADING, -heading, speedMax);
+          }
+          else
+          {
+            message.length = sprintf(message.message, ":%c-%03d-%03d\n", MSG_DRV_HEADING, -heading, -speedMax);
+          }
+        }
+        message.error = false;
+      }
+    }
   }
   
   if(noCommandError)
@@ -159,4 +241,14 @@ ResponseMessage processCommand(char *command)
   }
 
   return message;
+}
+
+void updateJECCbot()
+{
+  switch(currentCommand.id)
+  {
+    case CMD_NOP: setMotors(0, 0); break;
+    case CMD_SETMOTORS: setMotors(currentCommand.param1, currentCommand.param2); break;
+    case CMD_DRIVEHEADING: moveHeading(currentCommand.param1, currentCommand.param2); break;
+  }
 }

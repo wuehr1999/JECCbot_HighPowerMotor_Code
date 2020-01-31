@@ -27,4 +27,6 @@ void loop() {
       serialData = "";
     }
   }
+
+  updateJECCbot();
 }

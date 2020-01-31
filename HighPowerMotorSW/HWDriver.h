@@ -15,6 +15,8 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
+#define P_BNO055 1
+
 extern Motor motorLeft, motorRight;
 extern BNO055 bno055;
 
@@ -44,5 +46,10 @@ int getHeading();
  * Returns calibration state of compass ( -100% to 100% ).
  */
 int getCompassCal();
+
+/***
+ * Moves robot along compass heading from -180 deg to 180 deg ) with max speed from -100% to 100%
+ */
+void moveHeading(int heading, int speedMax);
 
 #endif
