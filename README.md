@@ -18,7 +18,7 @@ The default protocol baudrate is 115200.
 | s       | set speeds | [-]speedLeft[-]speedRight | [-]speedLeft[-]speedRight | %03d, -100% to 100% | ```:s100-050\n``` |
 | f       | motors pwm frequency | frequency | frequency | %05d, 0 Hz to 16000 Hz | ```:f08000\n``` |
 | c       | compass calibration | - | calibration status | %03d, -100% to 100% | ```:c\n``` |
-| h       | compass heading | - | heading | %03d, -180° to 180° | ```:h\n``` |
+| h       | compass heading | - | [-]heading | %03d, -180° to 180° | ```:h\n``` |
 | d       | drive along compass heading | [-]heading[-]speedMax | [-]heading[-]speedMax | %03d, -180° to 180°, -100% to 100%| ```:d090080\ņ``` |
 
 ### Error Codes
