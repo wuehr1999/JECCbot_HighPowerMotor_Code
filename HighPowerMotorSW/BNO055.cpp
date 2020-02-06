@@ -1,11 +1,12 @@
 #include "BNO055.h"
 
-void bno055Init(BNO055 *bno, int address)
+void bno055Init(BNO055 *bno, int address, int phaseOffset)
 {
   Wire.begin();
 
   bno->address = address;
-  Serial.println(address);
+  bno->phaseOffset = phaseOffset;
+  //Serial.println(address);
 
   Wire.beginTransmission(bno->address);
   Wire.write(BNO055_REGISTER_OPMODE);
@@ -55,8 +56,17 @@ void bno055Update(BNO055 *bno)
   byte b2=Wire.read();
   Wire.endTransmission(false);
   uint16_t rawHeading=(b2<<8)|b1;
-  int heading=(int)((float)rawHeading/16.0);
+  int heading=(int)((float)rawHeading/16.0) + bno->phaseOffset;
+
+  if(heading > 360)
+  {
+    heading = heading - 360;
+  }
+  
   if(heading>180)
+  {
     heading=heading-360;
+  }
+  
   bno->heading=heading;  
 }

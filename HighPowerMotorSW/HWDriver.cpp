@@ -11,7 +11,7 @@ void HWInit()
   motorEnable(&motorLeft, true);
   motorEnable(&motorRight, true);
 
-  bno055Init(&bno055, BNO055_ADDRESS);
+  bno055Init(&bno055, BNO055_ADDRESS, BNO055_PHASE_OFFSET);
 
   start1000Hz();
   start16000Hz();

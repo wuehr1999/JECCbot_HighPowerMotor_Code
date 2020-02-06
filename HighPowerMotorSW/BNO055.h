@@ -18,11 +18,14 @@ typedef struct BNO055{
   int gyr; //0-100%
   int acc; //0-100%
   int mag; //0-100%
+
+  int phaseOffset; // 0 to 180 degrees
+  
   int heading; //-180 to 180 degrees
 }BNO055;
 
 /***Inits BNO with correct opmode***/
-void bno055Init(BNO055 *bno, int address);
+void bno055Init(BNO055 *bno, int address, int phaseOffset);
 
 /***Updates BNO Data struct***/
 void bno055Update(BNO055 *bno);

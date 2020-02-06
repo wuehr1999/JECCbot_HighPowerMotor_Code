@@ -15,6 +15,8 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
+#define BNO055_PHASE_OFFSET 90
+
 #define P_BNO055 1
 
 extern Motor motorLeft, motorRight;
