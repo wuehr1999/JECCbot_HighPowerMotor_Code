@@ -1,254 +1,88 @@
 #include "JECCbotAPI.h"
 
-ApiCommand currentCommand;
-
-ResponseMessage initJECCbot()
+void initJECCbot()
 {
+  apiInit();
   HWInit();
-
-  currentCommand.id = CMD_NOP;
-  
-  ResponseMessage message;
-  message.length = sprintf(message.message, ":init\n");
-  message.error = false;
-
-  return message;
 }
 
-ResponseMessage errorMessage(int error)
+void generateResponse(char *resp, uint16_t address);
+void generateResponse(char *resp, char *errorMessage);
+
+void runApiStatemachine();
+
+APIResponse processCommand(char* command)
 {
-  ResponseMessage m;
-
-  m.error = true;
-  m.length = sprintf(m.message, ":e%03d\n", error);
-
-  return m;
-}
-
-ResponseMessage processCommand(char *command)
-{
-  char *msg = (char *)malloc(sizeof(char)*(strlen(command) + 1));
-  strcpy(msg, command);
-
-  ResponseMessage message;
-
-  bool noCommandError = true;
-  bool commandNotFoundError = true;
-  bool syntaxError = true;
-
-  if (msg[0] == ':')
-  {
-    noCommandError = false;
-    
-    if (msg[1] == MSG_DRV_SPEED)
-    {
-      commandNotFoundError = false;
-
-      int left, right, messageLen;
-
-      if (msg[2] == '-')
-      {
-        left = -(100 * ((int)msg[3] - 48) + 10 * ((int)msg[4] - 48) + 1 * ((int)msg[5] - 48));
-        if (msg[6] == '-')
-        {
-          right = -(100 * ((int)msg[7] - 48) + 10 * ((int)msg[8] - 48) + 1 * ((int)msg[9] - 48));
-          messageLen = 10;
-        }
-        else
-        {
-          right = (100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
-          messageLen = 9;
-        }
-      }
-      else
-      {
-        left = (100 * ((int)msg[2] - 48) + 10 * ((int)msg[3] - 48) + 1 * ((int)msg[4] - 48));
-        if (msg[5] == '-')
-        {
-          right = -(100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
-          messageLen = 9;
-        }
-        else
-        {
-          right = (100 * ((int)msg[5] - 48) + 10 * ((int)msg[6] - 48) + 1 * ((int)msg[7] - 48));
-          messageLen = 8;
-        }
-      }
-      if (msg[messageLen] == '\n')
-      {
-        syntaxError = false;
-
-        //setMotors(left, right);
-        currentCommand.id = CMD_SETMOTORS;
-        currentCommand.param1 = left;
-        currentCommand.param2 = right;
-        
-        if (left >= 0)
-        {
-          if (right >= 0)
-          {
-            message.length = sprintf(message.message, ":%c%03d%03d\n", MSG_DRV_SPEED, left, right);
-          }
-          else
-          {
-            message.length = sprintf(message.message, ":%c%03d-%03d\n", MSG_DRV_SPEED, left, -right);
-          }
-        }
-        else
-        {
-          if (right >= 0)
-          {
-            message.length = sprintf(message.message, ":%c-%03d%03d\n", MSG_DRV_SPEED, -left, right);
-          }
-          else
-          {
-            message.length = sprintf(message.message, ":%c-%03d-%03d\n", MSG_DRV_SPEED, -left, -right);
-          }
-        }
-        message.error = false;
-      }
-    }
-    else if (msg[1] == MSG_DRV_FREQ)
-    {
-      commandNotFoundError = false;
-
-      int freq = 10000 * ((int)msg[2] - 48) + 1000 * ((int)msg[3] - 48) + 100 * ((int)msg[4] - 48) + 10 * ((int)msg[5] - 48) + 1 * ((int)msg[6] - 48);
-      if (msg[7] == '\n')
-      {
-        syntaxError = false;
-
-        changeMotorPwmFrequency(freq);
-
-        message.length = sprintf(message.message, ":%c%05d\n", MSG_DRV_FREQ, freq);
-        message.error = false;
-      }
-    }
-    else if (msg[1] == MSG_COMPASS_HEADING)
-    {
-      commandNotFoundError = false;
-
-      if (msg[2] == '\n')
-      {
-        syntaxError = false;
-        int heading = getHeading();
-        if(heading > 0)
-        {
-          message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_HEADING, heading);
-        }
-        else
-        {
-          message.length = sprintf(message.message, ":%c-%03d\n", MSG_COMPASS_HEADING, -heading);          
-        }
-        message.error = false;
-      }
-      else
-      {
-        message = errorMessage(MSG_ERROR_SYNTAX);
-      }
-    }
-    else if (msg[1] == MSG_COMPASS_CAL)
-    {
-      commandNotFoundError = false;
-
-      if (msg[2] == '\n')
-      {
-        syntaxError = false;
-
-        message.length = sprintf(message.message, ":%c%03d\n", MSG_COMPASS_CAL, getCompassCal());
-        message.error = false;
-      }
-    }
-    if (msg[1] == MSG_DRV_HEADING)
-    {
-      commandNotFoundError = false;
-
-      int heading, speedMax, messageLen;
-
-      if (msg[2] == '-')
-      {
-        heading = -(100 * ((int)msg[3] - 48) + 10 * ((int)msg[4] - 48) + 1 * ((int)msg[5] - 48));
-        if (msg[6] == '-')
-        {
-          speedMax = -(100 * ((int)msg[7] - 48) + 10 * ((int)msg[8] - 48) + 1 * ((int)msg[9] - 48));
-          messageLen = 10;
-        }
-        else
-        {
-          speedMax = (100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
-          messageLen = 9;
-        }
-      }
-      else
-      {
-        heading = (100 * ((int)msg[2] - 48) + 10 * ((int)msg[3] - 48) + 1 * ((int)msg[4] - 48));
-        if (msg[5] == '-')
-        {
-          speedMax = -(100 * ((int)msg[6] - 48) + 10 * ((int)msg[7] - 48) + 1 * ((int)msg[8] - 48));
-          messageLen = 9;
-        }
-        else
-        {
-          speedMax = (100 * ((int)msg[5] - 48) + 10 * ((int)msg[6] - 48) + 1 * ((int)msg[7] - 48));
-          messageLen = 8;
-        }
-      }
-      if (msg[messageLen] == '\n')
-      {
-        syntaxError = false;
-
-        currentCommand.id = CMD_DRIVEHEADING;
-        currentCommand.param1 = heading;
-        currentCommand.param2 = speedMax;
-        
-        if (heading >= 0)
-        {
-          if (speedMax >= 0)
-          {
-            message.length = sprintf(message.message, ":%c%03d%03d\n", MSG_DRV_HEADING, heading, speedMax);
-          }
-          else
-          {
-            message.length = sprintf(message.message, ":%c%03d-%03d\n", MSG_DRV_HEADING, heading, -speedMax);
-          }
-        }
-        else
-        {
-          if (speedMax >= 0)
-          {
-            message.length = sprintf(message.message, ":%c-%03d%03d\n", MSG_DRV_HEADING, -heading, speedMax);
-          }
-          else
-          {
-            message.length = sprintf(message.message, ":%c-%03d-%03d\n", MSG_DRV_HEADING, -heading, -speedMax);
-          }
-        }
-        message.error = false;
-      }
-    }
-  }
+  uint8_t len = strlen(command) + 1;
   
-  if(noCommandError)
-  {
-    message = errorMessage(MSG_ERROR_NOCOMMAND);
-  }
-  else if(commandNotFoundError)
-  {
-    message = errorMessage(MSG_ERROR_NOTFOUND);
-  }
-  else if(syntaxError)
-  {
-    message = errorMessage(MSG_ERROR_SYNTAX);
-  }
+  char cmd[len];
+  strcpy(cmd, command);
 
-  return message;
+  APIResponse response;
+
+  response.error = -1;
+
+  if(cmd[0] == PROTOCOLL_STARTFLAG && cmd[len-2] == PROTOCOLL_STOPFLAG)
+  {
+    char accessModeStr[2];
+    char addressStr[4]; 
+    uint8_t accessMode;
+    uint16_t address;
+    uint16_t value;
+
+    strncpy(accessModeStr, &cmd[1], 2);
+    strncpy(addressStr, &cmd[3], 4);
+    accessMode = atoi(accessModeStr);
+    address = (uint16_t)strtol(addressStr, NULL, 16);
+
+    if(REG_READ_ACCESS == accessMode && address < REG_ADDRESS_RANGE && !(REG_WRITE_ACCESS == apiRegister.availableAccesses[address]))
+    {
+      generateResponse(response.message, address);
+    }
+    else if(REG_WRITE_ACCESS == accessMode && address < REG_ADDRESS_RANGE && !(REG_READ_ACCESS == apiRegister.availableAccesses[address]) && address < REG_ADDRESS_RANGE && len>9)
+    {
+      char valueStr[len - 9];    
+      strncpy(valueStr, &cmd[7], (len - 9)); 
+      value = (short)strtol(valueStr, NULL, 16);
+      apiRegister.bench[address] = value;
+      generateResponse(response.message, address);
+    }
+    else
+    {
+      generateResponse(response.message, PROTOCOLL_ERROR_ACCESS);
+    }
+  }
+  else
+  {
+    generateResponse(response.message, PROTOCOLL_ERROR_FORMAT);
+  }
+  return response;
 }
 
 void updateJECCbot()
 {
-  switch(currentCommand.id)
+  apiRegister.bench[REG_BNO_HEADING] = getHeading();
+  runApiStatemachine();
+}
+
+void generateResponse(char *resp, uint16_t address)
+{
+  sprintf(resp, "%c%04x%04x%c", PROTOCOLL_STARTFLAG, address, (unsigned short)apiRegister.bench[address], PROTOCOLL_STOPFLAG);
+}
+
+void generateResponse(char *resp, char *errorMessage)
+{
+  sprintf(resp, "%c%s%c", PROTOCOLL_STARTFLAG, errorMessage, PROTOCOLL_STOPFLAG);
+}
+
+void runApiStatemachine()
+{
+  if(apiRegister.bench[REG_STATE] == STATE_JOYDRIVE)
   {
-    case CMD_NOP: setMotors(0, 0); break;
-    case CMD_SETMOTORS: setMotors(currentCommand.param1, currentCommand.param2); break;
-    case CMD_DRIVEHEADING: moveHeading(currentCommand.param1, currentCommand.param2); break;
+    setMotors((int)apiRegister.bench[REG_MOTOR_LEFT], (int)apiRegister.bench[REG_MOTOR_RIGHT]);
+  }
+  else if(apiRegister.bench[REG_STATE] == STATE_HEADINGDRIVE)
+  {
+    moveHeading(apiRegister.bench[REG_BNO_HEADING], apiRegister.bench[REG_AVG_SPEED]);
   }
 }

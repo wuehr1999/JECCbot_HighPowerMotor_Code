@@ -38,7 +38,7 @@ void motorChangePwmFrequency(Motor *motor, int pwmFrequency)
     motor->pwm1Dutycycle = 0;
 }
 
-void motorEnable(Motor *motor, bool enableState)
+void motorEnable(Motor *motor, int enableState)
 {
   if(enableState)
   {

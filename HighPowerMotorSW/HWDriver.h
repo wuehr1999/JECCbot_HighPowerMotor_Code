@@ -49,9 +49,4 @@ int getHeading();
  */
 int getCompassCal();
 
-/***
- * Moves robot along compass heading from -180 deg to 180 deg ) with max speed from -100% to 100%
- */
-void moveHeading(int heading, int speedMax);
-
 #endif

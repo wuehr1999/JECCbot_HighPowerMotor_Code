@@ -30,7 +30,7 @@ void motorChangePwmFrequency(Motor *motor, int pwmFrequency);
 /***
  * Enables or disables motor according to enable state.
  */
-void motorEnable(Motor *motor, bool enableState);
+void motorEnable(Motor *motor, int enableState);
 
 /***
  * Sets motors speeds without control ( PWM dutycycle only ).

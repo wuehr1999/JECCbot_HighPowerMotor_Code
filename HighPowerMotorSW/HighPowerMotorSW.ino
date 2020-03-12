@@ -6,8 +6,7 @@
 void setup() {
   
   Serial.begin(115200);
-  ResponseMessage message = initJECCbot();
-  Serial.write(message.message);
+  initJECCbot();
 }
 
 void loop() {
@@ -19,11 +18,11 @@ void loop() {
     char c = Serial.read();
     serialData += c;
     if(c == '\n')
-    {
+    {      
+
       char *str = new char[serialData.length()+1];
       serialData.toCharArray(str, serialData.length()+1);
-      ResponseMessage message = processCommand(str);
-      Serial.write(message.message);
+      Serial.print(processCommand(str).message);
       serialData = "";
     }
   }
