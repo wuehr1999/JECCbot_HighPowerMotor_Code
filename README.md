@@ -10,6 +10,7 @@ The mikrocontroller answers with ```:```, the register value and ```\n```;
 ### Registers
 
 | Address | Type | Function       |
+| ------- | ---- | -------------- |
 | 0x0000  | rw   | robot state    |
 | 0x0001  | r    | api version    |
 | 0x0011  | rw   | speed left     |
