@@ -1,25 +1,24 @@
 # JECCbot_HighPowerMotor_Software
-This is the software implementation for the generationmake high power motor control board ( https://github.com/generationmake/HighPowerMotorFeatherWing ) to control the JECCbot mini  outdoor robot platform ( https://github.com/generationmake/JECCbot_mini ) with a ASCII based UART protocol. The base of the software stack is implemented in ANSI C so the portation to other mikrocontroller based platforms is possible without major problems.
+This is the software implementation for the generationmake high power motor control board ( https://github.com/generationmake/HighPowerMotorFeatherWing ) to control the JECCbot mini  outdoor robot platform ( https://github.com/generationmake/JECCbot_mini ) with a ASCII based serial protocol. The base of the api software stack is implemented in ANSI C so the portation to other mikrocontroller based platforms is possible without major problems.
 
 ## Protocol format
 
-Every protocol message begins with ```:``` and ends with ```\n```. Between there is following a specific command and its optional parameters:
+The protocol is leaned on ASCII-Modbus and is register based. 
+Every protocol instruction message begins with ```:```, which is followed with ```02``` for reading access or ```04``` for writing access. Then there is a 16 bit hex register address and then 16 bit hex register value. Every message ends with ```\n```.
+The mikrocontroller answers with ```:```, the register value and ```\n```;
 
-```:<command><parameter0><parameter1>...<parameter n>\n```
+### Registers
 
-If the command was executed correctly, the board will answer with the same command and optional set or read parameters or an error code.
+| Address | Type | Function       |
+| 0x0000  | rw   | robot state    |
+| 0x0001  | r    | api version    |
+| 0x0011  | rw   | speed left     |
+| 0x0012  | r    | emergency stop |
+| 0x0021  | rw   | speed right    |
+| 0x0031  | r    | bno heading    |
+| 0x0041  | rw   | avg speed      |
+| 0x0042  | rw   | dest heading   |
 
-The default protocol baudrate is 115200.
-
-### Commands
-
-| Command | Meaning | Parameters | Response parameters | Format | Example |
-| ------- | ------- | -------- | ----------------- | ------ | ------- |
-| s       | set speeds | [-]speedLeft[-]speedRight | [-]speedLeft[-]speedRight | %03d, -100% to 100% | ```:s100-050\n``` |
-| f       | motors pwm frequency | frequency | frequency | %05d, 0 Hz to 16000 Hz | ```:f08000\n``` |
-| c       | compass calibration | - | calibration status | %03d, -100% to 100% | ```:c\n``` |
-| h       | compass heading | - | [-]heading | %03d, -180° to 180° | ```:h\n``` |
-| d       | drive along compass heading | [-]heading[-]speedMax | [-]heading[-]speedMax | %03d, -180° to 180°, -100% to 100%| ```:d090080\ņ``` |
 
 ### Error Codes
 
