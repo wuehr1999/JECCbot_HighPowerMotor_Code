@@ -28,6 +28,31 @@ The direction and speed of the motors can be manipulated with the registers ```s
 
 The robot can drive along a heading from -180° to 180° saved in the ```dest heading``` register with an average speed from 0% to 100% saved in ```avg speed```.
 
+### Protocol format
+
+The protocol is leaned on ASCII-Modbus and is register based. 
+
+Every protocol instruction message begins with ```:```, which is followed with ```02``` for reading access or ```04``` for writing access. Then there is a 16 bit hex register address and then 16 bit hex register value ( interpreted as signed int ). Every message ends with ```\n```: ```:<02 / 04><hex address><hex value>\n```
+
+The mikrocontroller answers with ```:```, the register, value and ```\n```;
+
+#### Example
+
+Set robot state to 1:
+Instruction: ```:04000000001\n``` -> Response ```:00000001\n```.
+
+
+#### Error Codes
+
+Every error code starts with the command e and has a specific index ( %03d ) as parameter, e. g. ```:e001\n```.
+
+| Index | Meaning |
+| ----- | ------- |
+| 000 | received data is no command |
+| 001 | Command is not found |
+| 002 | Syntax error in command |
+
+
 ## Supported Mikrocontrollers
 
 | Mikrocontroller | Needed Libraries |
